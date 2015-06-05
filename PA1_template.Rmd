@@ -1,25 +1,64 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+PeerAssessment 1
+=========================================================
 
+Here is the answer for PeerAssessment 1 of Reproducible Research in Coursera.
 
-## Loading and preprocessing the data
+##Loading and preprocessing the data
 
+```{r, echo=TRUE}
+setwd("~/r_work/Coursera/Course6")
+data <- read.csv("activity.csv")
+day <- levels(data$date)
+ndays <- length(day)
+step_sum <- tapply(data$steps, data$date, sum, na.rm=TRUE)
+hist(step_sum, main="Sum of steps", xlab="sum for one day", col="blue")
+```
 
+##What is mean total number of steps taken per day?
 
-## What is mean total number of steps taken per day?
+```{r, echo=TRUE}
+step_mean <- tapply(ifelse(is.na(data$steps),0,data$steps), data$date, mean, na.rm=TRUE)
+step_median <- tapply(ifelse(is.na(data$steps),0,data$steps), data$date, median, na.rm=TRUE)
 
+step_mean
+step_median
+```
 
+##What is the average daily activity pattern?
 
-## What is the average daily activity pattern?
+```{r, echo=TRUE}
+step_ave <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
+plot(step_ave, type="l", col="blue", main="Average daily activity pattern", xlab="interval", ylab="average number of steps")
+row <- grep(max(data$steps, na.rm=TRUE), data$steps)
+as.vector(data$date[row])
+data$interval[row]
+```
 
+##Imputing missing values
 
+```{r, echo=TRUE}
+length(which(is.na(data$steps)))
+library(dplyr)
+data <- mutate(data, steps2=ifelse(is.na(steps), step_mean[date], steps))
+step2_sum <- tapply(data$steps2, data$date, sum, na.rm=TRUE)
+hist(step2_sum, main="Sum of steps", xlab="sum for one day", col="blue")
+step2_mean <- tapply(data$steps2, data$date, mean, na.rm=TRUE)
+step2_median <- tapply(data$steps2, data$date, median, na.rm=TRUE)
+step2_mean - step_mean
+step2_median - step_median
 
-## Imputing missing values
+```
 
+##Weekdays and weekends
 
+```{r, echo=TRUE}
+data <- mutate(data, wday = as.factor(weekdays(as.Date(data$date))))
+data_wend <- filter(data, wday == "Sunday" | wday == "Saturday")
+data_wday <- filter(data, wday == "Monday" | wday == "Tuesday" | wday == "Wednesday" | wday == "Thursday" | wday == "Friday")
+step_wend <- tapply(data_wend$steps2, data_wend$interval, mean, na.rm=TRUE)
+step_wday <- tapply(data_wday$steps2, data_wday$interval, mean, na.rm=TRUE)
+par(mfcol = c(2,1))
+plot(step_wend, type="l", col="blue", main="Weekend", xlab="interval", ylab="average number of steps")
+plot(step_wday, type="l", col="blue", main="Weekday", xlab="interval", ylab="average number of steps")
 
-## Are there differences in activity patterns between weekdays and weekends?
+```
