@@ -28,7 +28,7 @@ step_median
 
 ```{r, echo=TRUE}
 step_ave <- tapply(data$steps, data$interval, mean, na.rm=TRUE)
-plot(step_ave, type="l", col="blue", main="Average daily activity pattern", xlab="interval", ylab="average number of steps")
+plot(x=names(step_ave), y=step_ave, type="l", col="blue", main="Average daily activity pattern", xlab="interval", ylab="average number of steps")
 row <- grep(max(data$steps, na.rm=TRUE), data$steps)
 as.vector(data$date[row])
 data$interval[row]
@@ -58,7 +58,7 @@ data_wday <- filter(data, wday == "Monday" | wday == "Tuesday" | wday == "Wednes
 step_wend <- tapply(data_wend$steps2, data_wend$interval, mean, na.rm=TRUE)
 step_wday <- tapply(data_wday$steps2, data_wday$interval, mean, na.rm=TRUE)
 par(mfcol = c(2,1))
-plot(step_wend, type="l", col="blue", main="Weekend", xlab="interval", ylab="average number of steps")
-plot(step_wday, type="l", col="blue", main="Weekday", xlab="interval", ylab="average number of steps")
+plot(x=names(step_wend), y=step_wend, type="l", col="blue", main="Weekend", xlab="interval", ylab="average number of steps")
+plot(x=names(step_wday), y=step_wday, type="l", col="blue", main="Weekday", xlab="interval", ylab="average number of steps")
 
 ```
